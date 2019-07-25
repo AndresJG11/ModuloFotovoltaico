@@ -13,7 +13,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.jjoe64.graphview.GraphView;
@@ -22,23 +21,19 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.util.ArrayList;
 
-public class InterfazModulo extends AppCompatActivity implements View.OnClickListener {
+public class InterfazModulo extends AppCompatActivity {
 
     private String nombreModulo;
 
-    Button bConnect;
-    Button btnDesconectar;
-
     private GridView gridData;
     private GridAdapter gridAdapter;
-    ArrayList<Sensor> dataSensores;
+    private ArrayList<Sensor> dataSensores;
     public String strData[] = {"NaN", "NaN", "NaN", "NaN", "NaN", "NaN", "NaN"};
 
-    Bluetooth BT;
+    private Bluetooth BT;
+    private GraphView graphView;
 
-    private static LinearLayout graphLayout;
-    private static GraphView graphView;
-    private static ArrayList<LineGraphSeries> serieDatos = new ArrayList<>();
+    private ArrayList<LineGraphSeries> serieDatos = new ArrayList<>();
 
     private double xActual = 0.0;
     private double xAnt = 0.0;
@@ -47,12 +42,11 @@ public class InterfazModulo extends AppCompatActivity implements View.OnClickLis
     private Modulo modulo;
 
 
+
     @Override
     protected void onDestroy() {
+        System.gc();
         super.onDestroy();
-        xActual = 0.0;
-        xAnt = 0.0;
-        Toast.makeText(getApplicationContext(),"On Destroy",Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -70,13 +64,14 @@ public class InterfazModulo extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.modulo_panel);
 
         init();
-        buttonInit();
+
+        BT = new Bluetooth(nombreModulo);
     }
 
     @Override
     protected void onPause() {
-        super.onPause();
         BT.disconnect();
+        super.onPause();
         finish();
     }
 
@@ -99,17 +94,15 @@ public class InterfazModulo extends AppCompatActivity implements View.OnClickLis
 
                     // Se obtienen los datos separados por comas
                     strData = strIncom.split(",");
-                    Log.d("DATA",strIncom);
                     // Se actualiza el valor de x y se grafican los datos recibidos
                     xActual = xAnt + delayTime;
                     xAnt = xActual;
                     // Grafica los datos en orden de llegada
-                    int i = 0;
+                    int j = 0;
                     for(LineGraphSeries serie:serieDatos){
-                        double yValue = Double.parseDouble(strData[i]);
-                        Log.d("IMPRIME X ACUALTUAL",Double.toString(serie.getHighestValueX()));
+                        double yValue = Double.parseDouble(strData[j]);
                         serie.appendData(new DataPoint(xActual,yValue),true,100);
-                        i++;
+                        j++;
                     }
 
                     // Actualiza los TextView con los datos recibidos
@@ -145,9 +138,9 @@ public class InterfazModulo extends AppCompatActivity implements View.OnClickLis
         for(int i = 0;i<dataSensores.size();i++){
             LineGraphSeries serie = new LineGraphSeries();
             serie.setColor(dataSensores.get(i).getColor());
-            serie.setThickness(10);
-            serie.setDrawDataPoints(true);
-            serie.setDataPointsRadius(10);
+            serie.setThickness(5);
+            // serie.setDrawDataPoints(true);
+            // serie.setDataPointsRadius(10);
             serieDatos.add(serie);
             graphView.addSeries(serie);
         }
@@ -173,27 +166,5 @@ public class InterfazModulo extends AppCompatActivity implements View.OnClickLis
         gridData.setAdapter(gridAdapter);
     }
 
-    void buttonInit() {
-        // Agrega el evento a cada boton y fija Views
-        bConnect = (Button) findViewById(R.id.bConnect);
-        bConnect.setOnClickListener(this);
 
-        btnDesconectar = (Button) findViewById(R.id.btnDesconectar);
-        btnDesconectar.setOnClickListener(this);
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.bConnect:
-                // Inicializa la conexion BT con un modulo especifico
-                BT = new Bluetooth(nombreModulo);
-                break;
-            case R.id.btnDesconectar:
-                // Cierra la conexion BT
-                BT.disconnect();
-                Toast.makeText(getApplicationContext(), "Desconectado", Toast.LENGTH_LONG).show();
-                break;
-        }
-    }
 }
