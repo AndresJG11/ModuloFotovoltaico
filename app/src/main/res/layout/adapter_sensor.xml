@@ -17,7 +17,7 @@
         android:textSize="16sp"
         android:textStyle="bold"
         android:letterSpacing=".05"
-        android:background="@color/colorBlack"
+        android:background="@color/colorBlackOpa"
         />
 
     <TextView

@@ -13,21 +13,25 @@
     android:supportsRtl="true"
     android:theme="@style/AppTheme">
         <activity
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden"
             android:name=".MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.Modulo1" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
 
         <activity
-            android:name=".Bluetooth"
-            android:label="Bluetooth">
+            android:name=".MenuPrincipal"
+            android:label="MenuPrincipal">
             <intent-filter>
-                <action android:name="android.intent.action.BT1" />
-                <category android:name="android.intent.category.DEFAULT" />
+                <action android:name="android.intent.action.MAIN"></action>
+                <category android:name="android.intent.category.LAUNCHER"></category>
+
             </intent-filter>
+
         </activity>
     </application>
 

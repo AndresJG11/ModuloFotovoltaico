@@ -52,6 +52,23 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private double delayTime = 1.0; // Frecuencia de envio en segundos
 
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        try {
+            this.getSupportActionBar().hide();
+        } catch (NullPointerException e) {
+        }
+        setContentView(R.layout.activity_main);
+        init();
+        buttonInit();
+    }
+
+
     @SuppressLint("HandlerLeak")
     Handler mHandler = new Handler() {
         @Override
@@ -92,23 +109,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return true;
         }
     };
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        try {
-            this.getSupportActionBar().hide();
-        } catch (NullPointerException e) {
-        }
-        setContentView(R.layout.activity_main);
-        init();
-        buttonInit();
-
-    }
 
     void init() {
         Bluetooth.gethandler(mHandler);
