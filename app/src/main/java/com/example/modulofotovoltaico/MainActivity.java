@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -19,7 +18,6 @@ import android.widget.Toast;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
-import com.jjoe64.graphview.series.Series;
 
 import java.util.ArrayList;
 
@@ -46,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private static LinearLayout graphLayout;
     private static GraphView graphView;
-    private static LineGraphSeries series;
+    private static LineGraphSeries serieTemperatura;
     private static LineGraphSeries serieHumedad;
 
     private double xActual = 0.0;
@@ -70,14 +68,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                     String strIncom = new String(readBuf, 0, msg.arg1);
 
-                    Log.d("strIncom", strIncom);
                     // Se obtienen los datos separados por comas
                     strData = strIncom.split(",");
 
                     // Se actualiza el valor de x y se grafican los datos recibidos
                     xActual = xAnt + delayTime;
                     xAnt = xActual;
-                    series.appendData(new DataPoint(xActual, Double.parseDouble(strData[POS_TEMPERATURA])), true, 100);
+                    serieTemperatura.appendData(new DataPoint(xActual, Double.parseDouble(strData[POS_TEMPERATURA])), true, 100);
                     serieHumedad.appendData(new DataPoint(xActual, Double.parseDouble(strData[POS_HUMEDAD])), true, 100);
 
                     // Actualiza los TextView con los datos recibidos
@@ -125,10 +122,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         graphView = (GraphView) findViewById(R.id.graph);
 
-        series = new LineGraphSeries();
-        graphView.addSeries(series);
+
+        // Serie de temperatura
+        serieTemperatura = new LineGraphSeries();
+        serieTemperatura.setColor(dataSensores.get(POS_TEMPERATURA).getColor());
+        serieTemperatura.setThickness(10);
+        serieTemperatura.setDrawDataPoints(true);
+        serieTemperatura.setDataPointsRadius(10);
+        graphView.addSeries(serieTemperatura);
+
 
         serieHumedad = new LineGraphSeries();
+        serieHumedad.setColor(dataSensores.get(POS_HUMEDAD).getColor());
+        serieHumedad.setThickness(10);
+        serieHumedad.setDrawDataPoints(true);
+        serieHumedad.setDataPointsRadius(10);
         graphView.addSeries(serieHumedad);
 
         // activate horizontal zooming and scrolling
@@ -149,6 +157,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         ArrayList<Sensor> sensores = new ArrayList<>();
         Sensor sensor;
 
+        // getResources().getColor(R.color.colorData1)
+
         // Temperatura
         sensor = new Sensor("Temperatura");
         sensor.setMedida(strData[POS_TEMPERATURA]);
@@ -165,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // Luz UV
         sensor = new Sensor("Luz UV");
         sensor.setMedida(strData[POS_LUZ_UV]);
-        sensor.setColor("#70E48A");
+        sensor.setColor("#379EBF");
         sensores.add(sensor);
 
         // Luz IR
