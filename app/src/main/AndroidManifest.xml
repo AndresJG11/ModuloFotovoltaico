@@ -15,7 +15,7 @@
         <activity
             android:screenOrientation="landscape"
             android:configChanges="orientation|keyboardHidden"
-            android:name=".MainActivity">
+            android:name=".InterfazModulo">
             <intent-filter>
                 <action android:name="android.intent.action.Modulo1" />
 

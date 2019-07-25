@@ -2,7 +2,9 @@ package com.example.modulofotovoltaico;
 
 import android.graphics.Color;
 
-public class Sensor {
+import java.io.Serializable;
+
+public class Sensor implements Serializable {
     private String sensorName;
     private String medida;
     private int color;
