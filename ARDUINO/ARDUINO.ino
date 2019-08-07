@@ -90,8 +90,18 @@ volatile double frecuencia = 0.0;
 
 
 double count = 0.00;
-int tiempoEspera = 2000; // Tiempo de espera entre medidas, en milisegundos
+int tiempoEspera = 1000; // Tiempo de espera entre medidas, en milisegundos
+int iterador = -1; // Se debe iniciar en -1 para que al primero ciclo quede en cero.
 
+int const ID_TEMPERATURA = 0;
+int const ID_HUMEDAD = 1;
+int const ID_LUZ_UV = 2;
+int const ID_LUZ_IR = 3;
+int const ID_VOLTAJE = 4;
+int const ID_CORRIENTE = 5;
+int const ID_POTENCIA = 6;
+
+String dataSensores[] = {"NaN","NaN","NaN","NaN","NaN","NaN","NaN","NaN"};
 
 
 void setup() {
@@ -127,76 +137,87 @@ void setup() {
 
 
 void loop() {
-  
+  /*
     count++;
     String data = d2s(random(-5,5))+","+d2s(random(-5,5))+","+d2s(random(-5,5))+","+d2s(random(-5,5))+","+d2s(random(-5,5))+","+d2s(random(-5,5))+","+d2s(random(-5,5));
     enviarDatoBT(data,0);
     delay(1000);
-  
-
-/*t
-  enviarDatoBT("\n", 0);
-  medirUV();
-  delay(tiempoEspera);
-
-  medirLuzIR();
-  delay(tiempoEspera);
-
-  medirLuzVisible();
-  delay(tiempoEspera);
-
-  medirLux();
-  delay(tiempoEspera);
-
-  medirTemperatura();
-  delay(tiempoEspera);
-
-  medirHumedad();
-  delay(tiempoEspera);
-
-    medirCorriente();
-    delay(tiempoEspera);
-
-    medirVoltaje();
-    delay(tiempoEspera);
-
-    medirPotencia();
-    delay(tiempoEspera);
-
-    medirFrecuencia();
-    delay(tiempoEspera);
   */
+  enviarData();
+  imprimeLCD();
+  
 }
 
 void enviarData() {
-  /*
-    // TSL
-    float uvIntensity = 0.00;
-    float lux = 0.00;
-    double visible = 0.00;
-    uint16_t ir = 0, full = 0; // Luz ir y full espectro
-    // Sens corriente
-    double corriente = 0.00;
-    // DHT22
-    double t = 0.00;  // Temperatura
-    double h = 0.00;  // Humedad
-    // Potencia
-    double I = 0.0; // Corriente
-    double V = 0.0; // Voltaje
-    double P = 0.0; // Potencia
-    // Medir frecuencia
-    volatile double periodo = 0.0;
-    volatile double frecuencia = 0.0; */
-
   medirUV();
   medirLuzIR();
   medirLuzVisible();
   medirLux();
   medirTemperatura();
   medirHumedad();
-  
+
   String data = d2s(t) + "," + d2s(h) + "," + d2s(uvIntensity) + "," + d2s(ir) + "," + d2s(V) + "," + d2s(I) + "," + d2s(P);
   BT.println(data);
+  delay(tiempoEspera);
+  iterador = iterador == 6 ? 0:iterador+1;
+}
+
+void imprimeLCD() {
+    String medida = "NaN";
+    double valor = 0.0;
+    String unidad = "Nan";
+
+    switch (iterador) {
+      case ID_TEMPERATURA:
+        medida = "Temperatura";
+        valor = t;
+        unidad = "Celcius";
+        break;
+      case ID_HUMEDAD:
+        medida = "Humedad";
+        valor = t;
+        unidad = "%RH";
+        break;
+      case ID_LUZ_UV:
+        medida = "Luz UV";
+        valor = uvIntensity;
+        unidad = "mW/cm^2";
+        break;
+      case ID_LUZ_IR:
+        medida = "Luz IR";
+        valor = ir;
+        unidad = " ";
+        break;
+      case ID_VOLTAJE:
+        medida = "Voltaje";
+        valor = V;
+        unidad = "Voltios";
+        break;
+      case ID_CORRIENTE:
+        medida = "Corriente";
+        valor = I;
+        unidad = "Amperios";
+        break;
+      case ID_POTENCIA:
+        medida = "Potencia";
+        valor = P;
+        unidad = "Watt";
+        break;
+
+    }
+
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print(medida);
+    lcd.setCursor(0, 1);
+    lcd.print(valor);
+    lcd.print(" ");
+    lcd.print(unidad);
+    Serial.print(medida);
+    Serial.print(" ");
+    Serial.print(valor);
+    Serial.print(" ");
+    Serial.println(unidad);
 }
 
 
@@ -224,7 +245,6 @@ void medirUV() {
   int refLevel = averageAnalogRead(REF_3V3);
   float outputVoltage = 3.3 / refLevel * uvLevel;
   uvIntensity = mapfloat(outputVoltage, 0.99, 2.9, 0.0, 15.0);
-  imprimirMedida("RadiacionUV", uvIntensity, "mW/cm^2");
 }
 
 int averageAnalogRead(int pinToRead) {
@@ -247,7 +267,6 @@ void medirLux() {
   ir = lum >> 16;
   full = lum & 0xFFFF;
   lux = tsl.calculateLux(full, ir);
-  imprimirMedida("Iluminacion", lux, "Lux");
 }
 
 void medirLuzVisible() {
@@ -255,14 +274,12 @@ void medirLuzVisible() {
   ir = lum >> 16;
   full = lum & 0xFFFF;
   visible = (double)(full - ir);
-  imprimirMedida("LuzVisible", visible, " ");
 }
 
 void medirLuzIR() {
   uint32_t lum = tsl.getFullLuminosity();
   ir = lum >> 16;
   full = lum & 0xFFFF;
-  imprimirMedida("Luz IR", (double)ir, " ");
 }
 
 void configureSensor(void) {
@@ -287,30 +304,26 @@ void medirCorriente() {
   double sensibilidad = 0.066;  // Sensibilidad del sensor ACS712
   corriente = ( (analogRead(A0) * 5.0 / 1023) - 2.5) / sensibilidad;
   I = corriente;
-  imprimirMedida("Corriente", corriente, "A");
 }
 
 void medirVoltaje() {
   double Vo = (analogRead(A1) * 5.0 / 1023);  // Voltaje a la salida del divisor
   double Vi = ((R1 + R2) / R1) * Vo; // Divisor de voltaje para conocer el voltaje de entrada
   V = Vi;
-  imprimirMedida("Voltaje", Vi, "V");
+
 }
 
 void medirPotencia() {
   P = V * I;
-  imprimirMedida("Potencia", P, "Watts");
 }
 
 void medirTemperatura() {
   t = dht.readTemperature(); // Lee temperatura en grados Celsius
   //float t = dht.readTemperature(true); //Descomentar para leer la temperatura en grados Fahrenheit
-  imprimirMedida("Temperatura", t, "Celsius");
 }
 
 void medirHumedad() {
   h = dht.readHumidity(); // Lee temperatura en grados Celsius
-  imprimirMedida("Humedad", h, "%RH");
 }
 
 void enviarDatoBT(String ID, double dato) {
@@ -329,24 +342,8 @@ void medirFrecuencia() {
   EIMSK = (1 << INT0);
   while (frecuencia == 0);
   EIMSK = (0 << INT0);
-  imprimirMedida("Frecuencia", frecuencia, "Hz");
 }
 
-void imprimirMedida(String medida, double valor, String unidad) {
-  lcd.clear();
-  lcd.setCursor(0, 0);
-  lcd.print(medida);
-  lcd.setCursor(0, 1);
-  lcd.print(valor);
-  lcd.print(" ");
-  lcd.print(unidad);
-  Serial.print(medida);
-  Serial.print(" ");
-  Serial.print(valor);
-  Serial.print(" ");
-  Serial.println(unidad);
-  enviarDatoBT(medida, valor);
-}
 
 void cruceCero() {
   //digitalWrite(pinCruce, HIGH);
