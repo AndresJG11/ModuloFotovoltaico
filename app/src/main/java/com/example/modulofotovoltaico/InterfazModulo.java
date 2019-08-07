@@ -65,7 +65,7 @@ public class InterfazModulo extends AppCompatActivity{
         }
         modulo = (Modulo)getIntent().getExtras().getSerializable("Modulo");
         setContentView(R.layout.modulo_panel);
-
+        Toast.makeText(getApplicationContext(),"Conectando...",Toast.LENGTH_SHORT).show();
         init();
 
         BT = new Bluetooth(nombreModulo);
