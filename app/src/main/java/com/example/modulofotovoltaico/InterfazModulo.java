@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.Toast;
@@ -18,10 +19,11 @@ import android.widget.Toast;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
+import com.jjoe64.graphview.series.Series;
 
 import java.util.ArrayList;
 
-public class InterfazModulo extends AppCompatActivity {
+public class InterfazModulo extends AppCompatActivity{
 
     private String nombreModulo;
 
@@ -34,6 +36,7 @@ public class InterfazModulo extends AppCompatActivity {
     private GraphView graphView;
 
     private ArrayList<LineGraphSeries> serieDatos = new ArrayList<>();
+    private ArrayList<LineGraphSeries> serieDatosGraph = new ArrayList<>();
 
     private double xActual = 0.0;
     private double xAnt = 0.0;
@@ -142,7 +145,7 @@ public class InterfazModulo extends AppCompatActivity {
             // serie.setDrawDataPoints(true);
             // serie.setDataPointsRadius(10);
             serieDatos.add(serie);
-            graphView.addSeries(serie);
+            //graphView.addSeries(serie);
         }
 
         // activate horizontal zooming and scrolling
@@ -156,6 +159,25 @@ public class InterfazModulo extends AppCompatActivity {
 
         // activate vertical scrolling
         graphView.getViewport().setScrollableY(true);
+
+        gridData.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3)
+            {
+                // Obtiene la serie seleccionada
+                LineGraphSeries serieSelected = serieDatos.get(position);
+
+                // Busca entre las series graficadas para eliminar o agregar al plot
+                if(serieDatosGraph.contains(serieSelected)){
+                    serieDatosGraph.remove(serieSelected);
+                    graphView.removeSeries(serieSelected);
+                } else {
+                    graphView.addSeries(serieSelected);
+                    serieDatosGraph.add(serieSelected);
+                }
+            }
+        });
     }
 
     public void actualizarSensores() {
@@ -165,6 +187,5 @@ public class InterfazModulo extends AppCompatActivity {
         }
         gridData.setAdapter(gridAdapter);
     }
-
 
 }
