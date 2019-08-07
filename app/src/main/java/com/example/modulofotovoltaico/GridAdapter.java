@@ -1,6 +1,7 @@
 package com.example.modulofotovoltaico;
 
 import android.content.Context;
+import android.support.annotation.ColorRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,10 +59,9 @@ public class GridAdapter extends BaseAdapter {
 
         if(dataSensores.get(position) != null){
             holder.getLblSensor().setText(dataSensores.get(position).getSensorName());
+            holder.getLblSensor().setBackgroundColor(dataSensores.get(position).getColorTitle());
             holder.getLblMedida().setText(dataSensores.get(position).getMedida());
             holder.getLinearLayout().setBackgroundColor(dataSensores.get(position).getColor());
-
-
         }
         return convertView;
     }
@@ -100,5 +100,12 @@ public class GridAdapter extends BaseAdapter {
         dataSensores.get(position).setMedida(medida);
         holder.getLblMedida().setText(medida);
     }
+
+    public void setEnfasis(int position,boolean estado){
+        dataSensores.get(position).setEnfasis(estado);
+        //holder.getLblSensor().setBackgroundColor(dataSensores.get(position).getColorTitle());
+    }
+
+
 
 }

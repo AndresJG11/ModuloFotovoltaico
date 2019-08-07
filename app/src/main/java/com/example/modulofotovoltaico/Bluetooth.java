@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +29,7 @@ public class Bluetooth {
     protected static final int SUCCESS_CONNECT = 0;
     protected static final int MESSAGE_READ = 1;
     private String moduloName;
+    public boolean isConnected = false;
     ArrayAdapter<String> listAdapter;
     ListView listView;
     static BluetoothAdapter btAdapter;
@@ -149,10 +151,12 @@ public class Bluetooth {
                 // Connect the device through the socket. This will block
                 // until it succeeds or throws an exception
                 mmSocket.connect();
+                isConnected = true;
                 //connectedThread = new ConnectedThread(mmSocket);
             } catch (IOException connectException) {
                 // Unable to connect; close the socket and get out
                 try {
+                    isConnected = false;
                     mmSocket.close();
                 } catch (IOException closeException) {
                 }

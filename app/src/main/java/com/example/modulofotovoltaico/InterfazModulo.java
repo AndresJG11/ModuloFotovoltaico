@@ -69,6 +69,11 @@ public class InterfazModulo extends AppCompatActivity{
         init();
 
         BT = new Bluetooth(nombreModulo);
+        /*
+        if(!BT.isConnected){
+            Toast.makeText(getApplicationContext(), "Imposible conectar, revisa la conexion e ingresa de nuevo", Toast.LENGTH_LONG).show();
+        }*/
+
     }
 
     @Override
@@ -170,9 +175,11 @@ public class InterfazModulo extends AppCompatActivity{
 
                 // Busca entre las series graficadas para eliminar o agregar al plot
                 if(serieDatosGraph.contains(serieSelected)){
+                    gridAdapter.setEnfasis(position,false);
                     serieDatosGraph.remove(serieSelected);
                     graphView.removeSeries(serieSelected);
                 } else {
+                    gridAdapter.setEnfasis(position,true);
                     graphView.addSeries(serieSelected);
                     serieDatosGraph.add(serieSelected);
                 }

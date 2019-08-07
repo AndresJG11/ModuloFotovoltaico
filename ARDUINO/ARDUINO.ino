@@ -112,7 +112,7 @@ void setup() {
   pinMode(pinVo, OUTPUT);
   TCCR2B = 0;
   TCCR2B |= (1 << CS20) || (0 << CS21) || (0 << CS22);
-  analogWrite(pinVo, 80);
+  analogWrite(pinVo, 50);
   /************* Config DHT *************/
   dht.begin();
   pinMode(DHTPIN, INPUT_PULLUP);

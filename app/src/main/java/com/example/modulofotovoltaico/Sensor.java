@@ -8,6 +8,8 @@ public class Sensor implements Serializable {
     private String sensorName;
     private String medida;
     private int color;
+    private int colorTitulo = Color.parseColor("#008577");
+    private boolean enfasis;
 
     public Sensor(String sensorName)
     {
@@ -34,4 +36,16 @@ public class Sensor implements Serializable {
     public void setMedida(String medida){
         this.medida = medida;
     }
+
+    public void setEnfasis(boolean estado){
+        enfasis = estado;
+        if(enfasis){
+            colorTitulo = Color.parseColor("#D81B60");
+        } else{
+            colorTitulo = Color.parseColor("#008577");
+        }
+    }
+
+    public int getColorTitle(){return colorTitulo;}
+
 }
